@@ -9,6 +9,7 @@ const App = () => {
   const [editIdx,setEditIdx] = useState(-1)
   const btn = useRef();
   const userIp = useRef();
+  const fileIp =useRef()
   
   useEffect(() => {
     const oldData = JSON.parse(sessionStorage.getItem("user")) || [];
@@ -17,7 +18,7 @@ const App = () => {
   
 
   const handleChange = (e)=>{
-    let {name,value,checked} = e.target;
+    let {name,value,checked,files} = e.target;
 
     let data = {...obj,[name]:value}
     setObj(data)
@@ -34,6 +35,19 @@ const App = () => {
       setObj({...obj,hobby : newHobby})
     }
 
+    if(files){
+      let file = files[0]
+      let reader = new FileReader();
+      reader.onloadend = ()=>{
+        let fileData = {
+          name : file.name,
+          type : file.type,
+          url : reader.result
+        }
+        setObj({...obj,fileData : fileData})
+      }
+      reader.readAsDataURL(file)
+    }
 
   }
 
@@ -61,6 +75,7 @@ const App = () => {
     }
     setObj({});
     setHobby([])
+    fileIp.current.value = ""
     userIp.current.focus()
     
   }
@@ -218,7 +233,11 @@ const App = () => {
                 className="w-100 p-3"
                 placeholder="Enter your address"></textarea>
               </div>
-
+              {/* Profile-image */}
+              <div className="mb-3">
+                  <input type="file" className='form-control' onChange={handleChange} ref={fileIp}/>
+                </div>
+                {/* Submit Button */}
               <button type="submit" className="btn btn-primary" ref={btn}>
                 Submit
               </button>
@@ -226,7 +245,7 @@ const App = () => {
           </div>
         </div>
         <div className="row">
-          <div className="col-md-10 mx-auto">
+          <div className="col-md-11 mx-auto">
             <table className="table table-striped table-bordered caption-top">
               <caption>
                 <h2>Details : </h2>
@@ -234,6 +253,7 @@ const App = () => {
                 <thead>
                   <tr>
                     <th>Sr.No</th>
+                    <th>Profile</th>
                     <th>Full Name</th>
                     <th>Email</th>
                     <th>Gender</th>
@@ -247,6 +267,13 @@ const App = () => {
                     list.map((val,idx)=>(
                       <tr key={val.id}>
                         <td>{idx + 1}</td>
+                        <td>
+                          <img
+                          className='rounded-circle' 
+                          src={val.fileData ? val.fileData.url : ""} 
+                          alt={val.fileData ? val.fileData.name : ""} 
+                          style={{width : "70px"}}/>
+                        </td>
                         <td>{val.username}</td>
                         <td>{val.email}</td>
                         <td>{val.gender}</td>
