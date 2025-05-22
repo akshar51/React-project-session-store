@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const App = () => {
 
@@ -10,7 +10,11 @@ const App = () => {
   const btn = useRef();
   const userIp = useRef();
   
- 
+  useEffect(() => {
+    const oldData = JSON.parse(sessionStorage.getItem("user")) || [];
+    setList(oldData)
+  }, []);
+  
 
   const handleChange = (e)=>{
     let {name,value,checked} = e.target;
@@ -39,6 +43,7 @@ const App = () => {
     if(editIdx == -1){
       let data = [...list,{...obj,id : Date.now()}]
       setList(data)
+      sessionStorage.setItem("user",JSON.stringify(data))
     }
     else{
       let data = list.map((item)=>{
@@ -49,6 +54,7 @@ const App = () => {
       })
       setList(data);
       setEditIdx(-1)
+      sessionStorage.setItem("user",JSON.stringify(data))
       btn.current.classList.remove("btn-success")
       btn.current.innerText = "Submit";
       btn.current.classList.add("btn-primary")
@@ -56,11 +62,13 @@ const App = () => {
     setObj({});
     setHobby([])
     userIp.current.focus()
+    
   }
 
   const handleDelete =(id)=>{
     let data = list.filter((item)=>item.id != id)
     setList(data);
+    sessionStorage.setItem("user",JSON.stringify(data))
   }
 
   const handleEdit = (id)=>{
