@@ -62,7 +62,7 @@ const App = () => {
     else{
       let data = list.map((item)=>{
         if(item.id == editIdx){
-          item = obj; 
+           return { ...obj, id: editIdx }; 
         }
         return item;
       })
